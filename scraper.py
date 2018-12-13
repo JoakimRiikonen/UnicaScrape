@@ -34,11 +34,8 @@ for link in links:
 
     site = requests.get(full_addr)
     if site.status_code != 200:
-        # print("Error fetching site, status code " + site.status_code)
-        # data[link]["error"] = True
+        print("Error fetching site" + link + ", status code " + site.status_code)
         continue
-
-    # data[link]["error"] = False
 
     # using lxml because the html of the site is broken and html.parser doesnt work
     soup = BeautifulSoup(site.text, 'lxml')
@@ -48,18 +45,16 @@ for link in links:
 
     for accord in accords:
         day = accord.find('h4').text
-        data[link][day] = {}
-        # print(day)
+        data[link][day] = []
+        print(day)
         lunches = accord.find_all('td', {'class': 'lunch'})
         prices = accord.find_all('td', {'class': 'price quiet'})
         for i in range(len(lunches)):
             # food item
             lunch = lunches[i].text
-            data[link][day]["item"] = lunch
             # price
             price = ' '.join(prices[i].text.split())
-            data[link][day]["price"] = price
-            # print(lunches[i].text + " " + price)
+            data[link][day].append({"lunch": lunch, "price": price})
 
     time.sleep(1)
 
